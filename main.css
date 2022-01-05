@@ -36,7 +36,8 @@ body {
   gap: 0.5rem;
 
   max-width: 60rem;
-  min-width: 3rem;
+  min-width: 7rem;
+  width: 20rem;
   border: 3px solid var(--jet);
   border-radius: 20px;
   padding: 0.8rem;
@@ -94,6 +95,10 @@ button:hover {
 .right-operators {
   background-color: var(--khaki-web);
   color: #fff;
+}
+
+.clear {
+  grid-column: 1 / 4;
 }
 
 #zero-button {

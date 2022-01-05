@@ -5,6 +5,8 @@ const numberButtons = Array.from(document.getElementsByClassName('numbers'));
 const operatorButtons = Array.from(document.getElementsByClassName('operator'));
 
 let input = [];
+let dotInDisplay = false;
+let lastButtonWasOperator = false;
 
 const add = (input) => input.operand1 + input.operand2;
 
@@ -13,6 +15,15 @@ const subtract = (input) => input.operand1 - input.operand2;
 const multiply = (input) => input.operand1 * input.operand2;
 
 const divide = (input) => input.operand1 / input.operand2;
+
+const roundable = (floatNum) => {
+  floatNum = floatNum.toString();
+  let indexOfDot = floatNum.indexOf('.');
+  let lengthAfterDot = floatNum.slice(indexOfDot + 1).length;
+
+  if (lengthAfterDot > 5) return true;
+  else return false;
+};
 
 function operate(arr) {
   let result;
@@ -48,8 +59,13 @@ function operate(arr) {
 
     arr.splice(0, 3, result);
   }
+  result = arr[0];
 
-  return arr[0];
+  if (roundable(result)) {
+    result = Number(result.toFixed(6));
+  }
+
+  return result;
 }
 
 const appendInput = (inputString) => (display.innerText += inputString);
@@ -64,11 +80,13 @@ const displayIsNotEmpty = () => display.innerText;
 
 const displayEquation = (input) => (equation.innerText = input.join(' '));
 
+const setDisplayToZero = () => (display.innerText = '0');
+
 function clear() {
   input = [];
   display.innerText = '';
   equation.innerText = '';
-  display.innerText = 0;
+  setDisplayToZero();
 }
 
 function displayInput(e) {
@@ -76,7 +94,14 @@ function displayInput(e) {
   const button = e.target;
   const className = button.className;
 
-  if (className.includes('clear')) clear();
+  if (className.includes('dot')) {
+    if (dotInDisplay) {
+      return;
+    } else {
+      dotInDisplay = true;
+      appendInput(button.innerText);
+    }
+  } else if (className.includes('clear')) clear();
   else if (className.includes('operator')) {
     if (displayIsNotEmpty() && checkInput(displayText)) {
       switch (button.innerText) {
@@ -96,13 +121,19 @@ function displayInput(e) {
         case 'x':
         case '÷':
         default:
+          if (lastButtonWasOperator) {
+            return;
+          }
           input.push(Number(displayText));
           input.push(button.innerText);
 
-          clearDisplay();
+          setDisplayToZero();
           break;
       }
       displayEquation(input);
+      dotInDisplay = false;
+      lastButtonWasOperator = true;
+      return;
     }
   } else if (className.includes('number')) {
     if (displayText === '0') {
@@ -111,6 +142,8 @@ function displayInput(e) {
       appendInput(button.innerText);
     }
   }
+
+  lastButtonWasOperator = false;
 }
 
 buttons.forEach((button) => addEventListener('click', displayInput));
