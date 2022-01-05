@@ -68,21 +68,28 @@ function clear() {
   input = [];
   display.innerText = '';
   equation.innerText = '';
+  display.innerText = 0;
 }
 
 function displayInput(e) {
   let displayText = display.innerText;
-  const target = e.target;
-  const className = target.className;
+  const button = e.target;
+  const className = button.className;
 
   if (className.includes('clear')) clear();
   else if (className.includes('operator')) {
     if (displayIsNotEmpty() && checkInput(displayText)) {
-      switch (target.innerText) {
+      switch (button.innerText) {
         case '=':
-          input.push(Number(display.innerText));
-          display.innerText = operate(input);
+          input.push(Number(displayText));
 
+          let result = operate(input);
+          if (result === Infinity) {
+            alert('Not possible, bruh.');
+          } else {
+            display.innerText = result;
+          }
+          input = [];
           break;
         case '+':
         case '-':
@@ -90,15 +97,19 @@ function displayInput(e) {
         case '÷':
         default:
           input.push(Number(displayText));
-          input.push(target.innerText);
+          input.push(button.innerText);
 
           clearDisplay();
           break;
       }
+      displayEquation(input);
     }
-    displayEquation(input);
   } else if (className.includes('number')) {
-    appendInput(target.innerText);
+    if (displayText === '0') {
+      display.innerText = button.innerText;
+    } else {
+      appendInput(button.innerText);
+    }
   }
 }
 
