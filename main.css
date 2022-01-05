@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+:root {
+  --smokey-black: rgb(20, 17, 15);
+  --black-chocolate: #231e1a;
+  --jet: #34312d;
+  --gray-web: #7e7f83;
+  --cultured: #f3f3f4;
+  --khaki-web: #d0b79f;
+  --tan: #c9ac92;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--black-chocolate);
+  font-family: 'Montserrat', Helvetica, sans-serif;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 95%;
+}
+
+.calculator {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+
+  max-width: 60rem;
+  min-width: 3rem;
+  border: 3px solid var(--jet);
+  border-radius: 20px;
+  padding: 0.8rem;
+
+  background-color: var(--smokey-black);
+}
+
+.screen {
+  grid-column: 1 / -1;
+
+  height: 6rem;
+  border-radius: 10px;
+  padding: 1rem;
+
+  background-color: var(--tan);
+
+  font-family: Verdana, sans-serif;
+}
+
+.equation {
+  font-size: 0.9rem;
+}
+
+.user-input {
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+button {
+  padding: 1rem;
+  border: none;
+  border-radius: 10px;
+
+  font-size: 2rem;
+
+  color: var(--cultured);
+}
+
+button:hover {
+  background-color: #eaebeb;
+  color: #5c5c5c;
+}
+
+.numbers {
+  background-color: var(--gray-web);
+}
+
+.top-operators {
+  background-color: var(--jet);
+}
+
+.right-operators {
+  background-color: var(--khaki-web);
+  color: #fff;
+}
+
+#zero-button {
+  grid-column: 1 / 3;
+}
