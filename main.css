@@ -79,7 +79,7 @@ button {
   color: var(--cultured);
 }
 
-button:hover {
+button:active {
   background-color: #eaebeb;
   color: #5c5c5c;
 }
