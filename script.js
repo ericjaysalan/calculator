@@ -1,4 +1,3 @@
-// TODO add error message when user tries to divide by zero
 // TODO add backspace button to delete wrong number
 // TODO add keyboard support
 const equation = document.querySelector('.equation');
@@ -28,14 +27,14 @@ const multiply = () => input.operand1 * input.operand2;
 
 const divide = () => input.operand1 / input.operand2;
 
-/* const roundable = (floatNum) => {
+const roundable = (floatNum) => {
   floatNum = floatNum.toString();
   let indexOfDot = floatNum.indexOf('.');
   let lengthAfterDot = floatNum.slice(indexOfDot + 1).length;
 
-  if (lengthAfterDot > 5) return true;
+  if (lengthAfterDot > 4) return true;
   else return false;
-}; */
+};
 
 function operate() {
   if (!'operand1' in input && !'operator' in input && !'operand2' in input) return;
@@ -59,31 +58,25 @@ function operate() {
   delete input.operand1;
   delete input.operand2;
   delete input.operator;
-  /* if (roundable(input[0])) {
-    input[0] = Number(input[0].toFixed(6));
-  } */
+  if (roundable(input.result) && typeof input.result === 'number') {
+    input.result = Number(input.result.toFixed(4));
+  }
+
+  if (typeof input.result !== Infinity || typeof input.result !== NaN) {
+    alert('Bruh, das not allowed.');
+    input.result = 0;
+  }
 }
 
-const appendToDisplay = (str) => (display.innerText += str);
+const appendToDisplay = (str) => {
+  if (display.innerText.length < 9) {
+    display.innerText += str;
+  }
+};
 
 const clearDisplay = () => (display.innerText = '');
 
-const checkInput = (input) => !isNaN(Number(input));
-
 const displayIsEmpty = () => display.innerText === '';
-
-const lastButtonArithmetic = () => {
-  let lastElement = input[input.length - 1];
-  switch (lastElement) {
-    case '+':
-    case '-':
-    case 'x':
-    case '÷':
-      return true;
-    default:
-      return false;
-  }
-};
 
 function clear() {
   input = {
@@ -111,14 +104,12 @@ function evaluateOperator(button, displayText) {
 
       display.innerText = input.result;
       delete input.result;
-      console.log(input);
-    } else {
     }
   } else {
+    // + - x ÷
     if ('operand1' in input && 'operator' in input) {
       if (displayObj.lastButtonWasOperator) {
         input.operator = buttonText;
-        console.log(input);
         return;
       } else {
         input.operand2 = Number(displayText);
@@ -137,7 +128,6 @@ function evaluateOperator(button, displayText) {
       displayObj.operatorAndFirstOperand = true;
     }
     displayObj.lastButtonWasOperator = true;
-    console.log(input);
   }
 }
 
@@ -150,20 +140,31 @@ function clickEventHandler(e) {
   switch (className) {
     case 'numbers':
       displayObj.lastButtonWasOperator = false;
+
       if (displayObj.operatorAndFirstOperand) {
         displayObj.operatorAndFirstOperand = false;
-        clearDisplay();
-        appendToDisplay(buttonText);
+
+        if (display.innerText === '0.') {
+          appendToDisplay(buttonText);
+        } else {
+          clearDisplay();
+          appendToDisplay(buttonText);
+        }
       } else appendToDisplay(buttonText);
 
       break;
     case 'clear':
+      input.setDot(false);
       clear();
       break;
     case 'dot':
       if (input.hasDot) return;
       input.setDot(true);
-      appendToDisplay(buttonText);
+
+      // The user can only put 1 dot.
+      if (displayObj.lastButtonWasOperator) clearDisplay();
+      if (display.innerText === '') appendToDisplay(`0`);
+      appendToDisplay('.');
       break;
     case 'operators':
       input.setDot(false);
