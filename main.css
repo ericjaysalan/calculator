@@ -49,7 +49,7 @@ body {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
 
   height: 6rem;
   border-radius: 10px;
@@ -60,9 +60,9 @@ body {
   font-family: Verdana, sans-serif;
 }
 
-.equation {
+/* .equation {
   font-size: 0.9rem;
-}
+} */
 
 .display {
   font-size: 2rem;
@@ -84,15 +84,16 @@ button:active {
   color: #5c5c5c;
 }
 
-.numbers {
+.numbers,
+.dot {
   background-color: var(--gray-web);
 }
 
-.top-operators {
+.clear {
   background-color: var(--jet);
 }
 
-.right-operators {
+.operators {
   background-color: var(--khaki-web);
   color: #fff;
 }
@@ -103,4 +104,9 @@ button:active {
 
 #zero-button {
   grid-column: 1 / 3;
+}
+
+.highlighted {
+  background-color: #eaebeb;
+  color: #5c5c5c;
 }

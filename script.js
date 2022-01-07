@@ -1,73 +1,76 @@
+// TODO add error message when user tries to divide by zero
+// TODO add backspace button to delete wrong number
+// TODO add keyboard support
 const equation = document.querySelector('.equation');
 const display = document.querySelector('.display');
 const buttons = Array.from(document.getElementsByTagName('button'));
 const numberButtons = Array.from(document.getElementsByClassName('numbers'));
 const operatorButtons = Array.from(document.getElementsByClassName('operator'));
+const clearButton = document.querySelector('.clear');
 
-// TODO show result when doing more than a pair of operands
-// TODO add error message when user tries to divide by zero
-// TODO add backspace button to delete wrong number
-// TODO add keyboard support
-
-// All the user input will be in an array, which will be evaluated whenever it has 3 elements.
-// Those 3 elements would be operand1, operator, and operand2
-let input = [];
+let input = {
+  hasDot: false,
+  setDot: function (bool) {
+    this.hasDot = bool;
+  },
+};
+let displayObj = {
+  lastButtonWasOperator: false,
+  operatorAndFirstOperand: false,
+};
 let dotInDisplay = false;
 
-const add = () => input[0] + input[2];
+const add = () => input.operand1 + input.operand2;
 
-const subtract = () => input[0] - input[2];
+const subtract = () => input.operand1 - input.operand2;
 
-const multiply = () => input[0] * input[2];
+const multiply = () => input.operand1 * input.operand2;
 
-const divide = () => input[0] / input[2];
+const divide = () => input.operand1 / input.operand2;
 
-const roundable = (floatNum) => {
+/* const roundable = (floatNum) => {
   floatNum = floatNum.toString();
   let indexOfDot = floatNum.indexOf('.');
   let lengthAfterDot = floatNum.slice(indexOfDot + 1).length;
 
   if (lengthAfterDot > 5) return true;
   else return false;
-};
+}; */
 
 function operate() {
-  let operator = input[1];
-  switch (operator) {
+  if (!'operand1' in input && !'operator' in input && !'operand2' in input) return;
+  switch (input.operator) {
     case '+':
-      input.splice(0, 3, add());
+      input.result = add();
       break;
     case '-':
-      input.splice(0, 3, subtract());
+      input.result = subtract();
       break;
     case 'x':
-      input.splice(0, 3, multiply());
+      input.result = multiply();
       break;
     case '÷':
-      input.splice(0, 3, divide());
+      input.result = divide();
       break;
     default:
-      console.warn("You're pressing equals, aren't you?");
+      warn('invalid operator');
   }
 
-  if (roundable(input[0])) {
+  delete input.operand1;
+  delete input.operand2;
+  delete input.operator;
+  /* if (roundable(input[0])) {
     input[0] = Number(input[0].toFixed(6));
-  }
+  } */
 }
 
-const appendToDisplay = (inputString) => (display.innerText += inputString);
-
-const isEqualsButton = (innerText) => innerText.includes('=');
+const appendToDisplay = (str) => (display.innerText += str);
 
 const clearDisplay = () => (display.innerText = '');
 
 const checkInput = (input) => !isNaN(Number(input));
 
-const displayIsNotEmpty = () => display.innerText;
-
-const displayEquation = () => (equation.innerText = input.join(' '));
-
-const setDisplay = (str) => (display.innerText = str);
+const displayIsEmpty = () => display.innerText === '';
 
 const lastButtonArithmetic = () => {
   let lastElement = input[input.length - 1];
@@ -83,48 +86,93 @@ const lastButtonArithmetic = () => {
 };
 
 function clear() {
-  input = [];
-  display.innerText = '';
-  equation.innerText = '';
+  input = {
+    hasDot: false,
+    setDot: function (bool) {
+      this.hasDot = bool;
+    },
+  };
+  displayObj = {
+    lastButtonWasOperator: false,
+    operatorAndFirstOperand: false,
+  };
+  clearDisplay();
 }
 
-function displayInput(e) {
+function evaluateOperator(button, displayText) {
+  let buttonText = button.innerText;
+
+  if (buttonText === '=') {
+    if (displayObj.lastButtonWasOperator) return;
+
+    if ('operand1' in input && 'operator' in input) {
+      input.operand2 = Number(displayText);
+      operate();
+
+      display.innerText = input.result;
+      delete input.result;
+      console.log(input);
+    } else {
+    }
+  } else {
+    if ('operand1' in input && 'operator' in input) {
+      if (displayObj.lastButtonWasOperator) {
+        input.operator = buttonText;
+        console.log(input);
+        return;
+      } else {
+        input.operand2 = Number(displayText);
+        operate();
+
+        display.innerText = input.result;
+        input.operand1 = input.result;
+        input.operator = button.innerText;
+        delete input.result;
+
+        displayObj.operatorAndFirstOperand = true;
+      }
+    } else {
+      input.operand1 = Number(display.innerText);
+      input.operator = button.innerText;
+      displayObj.operatorAndFirstOperand = true;
+    }
+    displayObj.lastButtonWasOperator = true;
+    console.log(input);
+  }
+}
+
+function clickEventHandler(e) {
   let displayText = display.innerText;
   const button = e.target;
   const className = button.className;
   const buttonText = button.innerText;
 
-  if (className.includes('dot')) {
-    if (dotInDisplay) {
-      return;
-    } else {
-      dotInDisplay = true;
-      appendToDisplay(buttonText);
-    }
-  } else if (className.includes('clear')) clear();
-  else if (className.includes('operator')) {
-    if (displayIsNotEmpty() && checkInput(displayText)) {
-      input.push(Number(displayText));
-      clearDisplay();
-
-      if (buttonText === '=') {
-        operate();
-        setDisplay(input[0]);
-        input.splice(0, 1);
-      } else if (input.length === 3) {
-        operate();
+  switch (className) {
+    case 'numbers':
+      displayObj.lastButtonWasOperator = false;
+      if (displayObj.operatorAndFirstOperand) {
+        displayObj.operatorAndFirstOperand = false;
         clearDisplay();
-        input.push(buttonText);
-      } else {
-        input.push(buttonText);
-      }
-      dotInDisplay = false;
-    } else if (lastButtonArithmetic()) {
-      input.splice(input.length - 1, 1, buttonText);
-    }
-  } else if (className.includes('number')) {
-    appendToDisplay(buttonText);
+        appendToDisplay(buttonText);
+      } else appendToDisplay(buttonText);
+
+      break;
+    case 'clear':
+      clear();
+      break;
+    case 'dot':
+      if (input.hasDot) return;
+      input.setDot(true);
+      appendToDisplay(buttonText);
+      break;
+    case 'operators':
+      input.setDot(false);
+
+      evaluateOperator(button, displayText);
+      break;
+    default:
+      console.log('wut?');
   }
 }
 
-buttons.forEach((button) => addEventListener('click', displayInput));
+buttons.forEach((button) => button.addEventListener('click', clickEventHandler));
