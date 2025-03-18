@@ -1,6 +1,10 @@
 const screen = document.querySelector("#screen");
 const buttonWrapper = document.querySelector("#button-wrapper");
 
+const showOnScreen = (buttonName) => {
+  screen.textContent += buttonName;
+};
+
 buttonWrapper.addEventListener("click", (clickEvent) => {
   const button = clickEvent.target;
 
@@ -8,6 +12,6 @@ buttonWrapper.addEventListener("click", (clickEvent) => {
     button.classList.contains("numbers") ||
     button.classList.contains("operators")
   ) {
-    screen.textContent += button.textContent;
+    showOnScreen(button.textContent);
   }
 });
