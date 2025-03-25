@@ -1,54 +1,127 @@
 const screen = document.querySelector("#screen");
 const buttonWrapper = document.querySelector("#button-wrapper");
-
 const numbersToOperate = {
-  inputDone: false,
+  clearScreenNext: false,
   firstNumber: null,
   secondNumber: null,
   operator: null,
   operatorSelected: false,
 };
 
-const clearScreen = () => {
-  screen.textContent = "0";
-};
+// Setters
+const setFirstNumber = (number) => (numbersToOperate.firstNumber = number);
 
-const showOnScreen = (buttonName) => {
+const setSecondNumber = (number) => (numbersToOperate.secondNumber = number);
+
+const setOperator = (operator) => (numbersToOperate.operator = operator);
+
+const setOperatorSelected = (bool) =>
+  (numbersToOperate.operatorSelected = bool);
+
+const setClearScreenNext = (bool) =>
+  (numbersToOperate.clearScreenNext = Boolean(bool));
+
+// Getters
+const getFirstNumber = () => numbersToOperate.firstNumber;
+
+const getSecondNumber = () => numbersToOperate.secondNumber;
+
+const getOperator = () => numbersToOperate.operator;
+
+const getOperatorSelected = () => numbersToOperate.operatorSelected;
+
+const getClearScreenNext = () => numbersToOperate.clearScreenNext;
+
+const getNumberOnScreen = () => screen.textContent;
+
+// Screen-related
+const clearScreen = () => {
+  screen.textContent = "";
+};
+const appendToScreen = (buttonName) => {
   if (screen.textContent === "0") {
     screen.textContent = buttonName;
-  } else if (numbersToOperate.inputDone) {
-    clearScreen();
-    screen.textContent = buttonName;
-    numbersToOperate.inputDone = false;
   } else {
     screen.textContent += buttonName;
   }
 };
 
-const process = (currentNumber, operator) => {
-  numbersToOperate.operatorSelected = true;
-  numbersToOperate.operator = operator;
+const displayResult = (result) => {
+  clearScreen();
+  appendToScreen(result);
+};
 
-  if (numbersToOperate.firstNumber === null) {
-    numbersToOperate.firstNumber = currentNumber;
-    numbersToOperate.inputDone = true;
-  } else if (numbersToOperate.secondNumber === null) {
-    numbersToOperate.secondNumber = currentNumber;
-    numbersToOperate.inputDone = true;
-    alert(operate);
+const isOperator = (button) => button.classList.contains("operators");
+
+const isEquals = (button) => button.classList.contains("equals");
+
+const isClear = (button) => button.classList.contains("clear");
+
+const isNumber = (button) => button.classList.contains("numbers");
+
+const reset = () => {
+  numbersToOperate.clearScreenNext = false;
+  numbersToOperate.firstNumber = null;
+  numbersToOperate.secondNumber = null;
+  numbersToOperate.operator = null;
+  numbersToOperate.operatorSelected = false;
+
+  screen.textContent = "0";
+};
+
+const operate = () => {
+  const num1 = Number(getFirstNumber());
+  const num2 = Number(getSecondNumber());
+  let result;
+
+  switch (getOperator()) {
+    case "+":
+      result = num1 + num2;
+      break;
+    case "−":
+      result = num1 - num2;
+      break;
+    case "×":
+      result = num1 * num2;
+      break;
+    case "÷":
+      result = num1 / num2;
+      break;
   }
 
-  console.log(numbersToOperate);
+  displayResult(result);
+  setFirstNumber(result);
+  setSecondNumber(null);
+  setClearScreenNext(true);
 };
 
 buttonWrapper.addEventListener("click", (clickEvent) => {
   const button = clickEvent.target;
 
-  if (button.classList.contains("numbers")) {
-    showOnScreen(button.textContent);
-  } else if (button.classList.contains("clear")) {
+  if (isNumber(button)) {
+    if (getClearScreenNext()) {
+      clearScreen();
+      setClearScreenNext(false);
+    }
+
+    appendToScreen(button.textContent);
+  } else if (isClear(button)) {
     clearScreen();
-  } else if (button.classList.contains("operators")) {
-    process(screen.textContent, button.textContent);
+    reset();
+  } else if (isEquals(button)) {
+    if (getFirstNumber() !== null) setSecondNumber(screen.textContent);
+
+    operate();
+  } else if (isOperator(button)) {
+    setOperatorSelected(true);
+    setClearScreenNext(true);
+
+    if (getFirstNumber() === null) {
+      setFirstNumber(getNumberOnScreen());
+    } else if (getSecondNumber() === null) {
+      setSecondNumber(getNumberOnScreen());
+    }
+
+    setOperator(button.textContent);
   }
 });
