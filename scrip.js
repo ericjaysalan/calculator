@@ -109,19 +109,34 @@ buttonWrapper.addEventListener("click", (clickEvent) => {
     clearScreen();
     reset();
   } else if (isEquals(button)) {
-    if (getFirstNumber() !== null) setSecondNumber(screen.textContent);
-
-    operate();
-  } else if (isOperator(button)) {
-    setOperatorSelected(true);
-    setClearScreenNext(true);
-
-    if (getFirstNumber() === null) {
-      setFirstNumber(getNumberOnScreen());
-    } else if (getSecondNumber() === null) {
+    if (getFirstNumber() !== null) {
       setSecondNumber(getNumberOnScreen());
+      operate();
+      setOperator(null);
+      setOperatorSelected(false);
     }
+    console.log(numbersToOperate);
+  } else if (isOperator(button)) {
+    if (getFirstNumber() === null && getSecondNumber() === null) {
+      setFirstNumber(getNumberOnScreen());
 
-    setOperator(button.textContent);
+      setOperatorSelected(true);
+      setOperator(button.textContent);
+
+      setClearScreenNext(true);
+    } else if (getOperatorSelected()) {
+      setSecondNumber(getNumberOnScreen());
+
+      operate();
+
+      setOperator(button.textContent);
+
+      console.log(numbersToOperate);
+    } else {
+      setOperator(button.textContent);
+      setOperatorSelected(true);
+
+      setClearScreenNext(true);
+    }
   }
 });
