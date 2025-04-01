@@ -69,12 +69,19 @@ const reset = () => {
   screen.textContent = "0";
 };
 
+const highlightOperatorBtn = (btn) => {
+  const highlight = "highlight";
+
+  if (btn.classList.contains(highlight)) btn.classList.remove(highlight);
+  else btn.classList.add(highlight);
+};
+
 const operate = () => {
   const num1 = Number(getFirstNumber());
   const num2 = Number(getSecondNumber());
   let result;
 
-  switch (getOperator()) {
+  switch (getOperator().textContent) {
     case "+":
       result = num1 + num2;
       break;
@@ -93,6 +100,7 @@ const operate = () => {
   setFirstNumber(result);
   setSecondNumber(null);
   setClearScreenNext(true);
+  highlightOperatorBtn(getOperator());
 };
 
 buttonWrapper.addEventListener("click", (clickEvent) => {
@@ -112,16 +120,18 @@ buttonWrapper.addEventListener("click", (clickEvent) => {
     if (getFirstNumber() !== null) {
       setSecondNumber(getNumberOnScreen());
       operate();
+
       setOperator(null);
       setOperatorSelected(false);
     }
     console.log(numbersToOperate);
   } else if (isOperator(button)) {
+    highlightOperatorBtn(button);
     if (getFirstNumber() === null && getSecondNumber() === null) {
       setFirstNumber(getNumberOnScreen());
 
       setOperatorSelected(true);
-      setOperator(button.textContent);
+      setOperator(button);
 
       setClearScreenNext(true);
     } else if (getOperatorSelected()) {
@@ -129,11 +139,11 @@ buttonWrapper.addEventListener("click", (clickEvent) => {
 
       operate();
 
-      setOperator(button.textContent);
+      setOperator(button);
 
       console.log(numbersToOperate);
     } else {
-      setOperator(button.textContent);
+      setOperator(button);
       setOperatorSelected(true);
 
       setClearScreenNext(true);

@@ -94,3 +94,8 @@ button {
 .hidden {
   visibility: hidden;
 }
+
+.highlight {
+  background-color: var(--white);
+  color: var(--eerie-black)
+}
