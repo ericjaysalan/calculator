@@ -59,6 +59,8 @@ const isClear = (button) => button.classList.contains("clear");
 
 const isNumber = (button) => button.classList.contains("numbers");
 
+const isDot = (button) => button.classList.contains("dot");
+
 const reset = () => {
   numbersToOperate.clearScreenNext = false;
   numbersToOperate.firstNumber = null;
@@ -79,6 +81,9 @@ const highlightOperatorBtn = (btn) => {
 const roundTo2 = (num) => {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 };
+
+const hasDot = (screenText) => !screen.textContent.includes(".");
+
 const operate = () => {
   const num1 = Number(getFirstNumber());
   const num2 = Number(getSecondNumber());
@@ -104,13 +109,23 @@ const operate = () => {
   setFirstNumber(result);
   setSecondNumber(null);
   setClearScreenNext(true);
+  setOperatorSelected(false);
   highlightOperatorBtn(getOperator());
 };
 
 buttonWrapper.addEventListener("click", (clickEvent) => {
   const button = clickEvent.target;
 
-  if (isNumber(button)) {
+  if (isDot(button)) {
+    if (hasDot(screen.textContent)) {
+      if (screen.textContent === "0") {
+        appendToScreen("0.");
+      } else appendToScreen(".");
+    } else if (getOperatorSelected()) {
+      clearScreen();
+      appendToScreen("0.");
+    }
+  } else if (isNumber(button)) {
     if (getClearScreenNext()) {
       clearScreen();
       setClearScreenNext(false);
