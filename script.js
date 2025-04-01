@@ -136,15 +136,16 @@ buttonWrapper.addEventListener("click", (clickEvent) => {
     clearScreen();
     reset();
   } else if (isEquals(button)) {
-    if (getFirstNumber() !== null) {
+    if (getFirstNumber() !== null && getOperatorSelected()) {
       setSecondNumber(getNumberOnScreen());
       operate();
 
       setOperator(null);
       setOperatorSelected(false);
+      console.log(numbersToOperate);
     }
-    console.log(numbersToOperate);
   } else if (isOperator(button)) {
+    // TODO Fix bug where operators can be clicked first.
     highlightOperatorBtn(button);
 
     if (getFirstNumber() === null && getSecondNumber() === null) {
