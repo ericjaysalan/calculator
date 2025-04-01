@@ -76,6 +76,9 @@ const highlightOperatorBtn = (btn) => {
   else btn.classList.add(highlight);
 };
 
+const roundTo2 = (num) => {
+  return Math.round((num + Number.EPSILON) * 100) / 100;
+};
 const operate = () => {
   const num1 = Number(getFirstNumber());
   const num2 = Number(getSecondNumber());
@@ -96,6 +99,7 @@ const operate = () => {
       break;
   }
 
+  if (!Number.isInteger(result)) result = roundTo2(result);
   displayResult(result);
   setFirstNumber(result);
   setSecondNumber(null);
@@ -127,6 +131,7 @@ buttonWrapper.addEventListener("click", (clickEvent) => {
     console.log(numbersToOperate);
   } else if (isOperator(button)) {
     highlightOperatorBtn(button);
+
     if (getFirstNumber() === null && getSecondNumber() === null) {
       setFirstNumber(getNumberOnScreen());
 
